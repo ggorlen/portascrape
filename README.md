@@ -1,0 +1,65 @@
+# portascrape
+
+A collection of simple in-browser scraping utilities. Usable in any browser automation software, an extension, a userscript, or manually in the browser console.
+
+## API
+
+- `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
+- `ps.waitForFunction(fn, opts)` -- wait for an arbitrary predicate.
+- `ps.$click(selector, opts)` -- wait for an element matching selector to exist, then click it.
+- `ps.$text(selector, opts)` -- wait for an element matching selector to exist, then extract its `.textContent`.
+- `ps.$table(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
+- `ps.$tableWithHeaders(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.
+- `ps.sleep(timeout)` -- Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
+
+In all cases, `opts` is defined as: TODO
+
+Coming soon, maybe:
+
+- Sync versions of the above API that don't wait
+- Pretty DOM element logging
+- `waitForDOMStable()`
+- Role-based selection
+- `withinFrame()`
+- `withinShadowRoot()`
+- Visibility checks
+
+## Usage
+
+## Userscript/Browser Console
+
+```js
+var script = document.createElement("script");
+script.src =
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape/portascrape.min.js";
+document.head.appendChild(script);
+(async () => {
+  console.log(await ps.$text("h1"));
+})();
+```
+
+### Puppeteer
+
+```js
+import puppeteer from "puppeteer";
+
+let browser;
+(async () => {
+  const portascrapeURL =
+    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape/portascrape.min.js";
+  const url = "https://www.example.com";
+  browser = await puppeteer.launch();
+  const [page] = await browser.pages();
+  await page.goto(url, { waitUntil: "domcontentloaded" });
+  await page.addScriptTag({ url: portascrapeURL });
+  const text = await page.evaluate(async () => {
+    const text = await ps.$text("h1");
+    return text;
+  });
+  console.log(text);
+})()
+  .catch((err) => console.error(err))
+  .finally(() => browser?.close());
+```
+
+Unfortunately, you'll need to re-add the script on every nav.
