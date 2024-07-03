@@ -2,6 +2,8 @@
 
 A collection of simple in-browser scraping utilities. Usable in any browser automation software, an extension, a userscript, or manually in the browser console.
 
+Project status: pre-alpha.
+
 ## API
 
 - `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
@@ -12,7 +14,25 @@ A collection of simple in-browser scraping utilities. Usable in any browser auto
 - `ps.$tableWithHeaders(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.
 - `ps.sleep(timeout)` -- Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
 
-In all cases, `opts` is defined as: TODO
+In all cases, `opts` is defined as:
+
+```js
+/**
+ * @typedef {Object} PsOptions
+ * @property {number} [timeout=30000] - Timeout in milliseconds.
+ * @property {"raf" | "mutation" | number} [polling="raf"] - Polling strategy.
+ * @property {string} [exactText] - Exact text to match.
+ * @property {string} [containsText] - Substring to match.
+ * @property {RegExp} [matches] - Regular expression to match.
+ */
+```
+
+TODO:
+
+- Break out special opts for waitForFunction because it doesn't use text matchers.
+- Add TS checking
+- Add tests
+- Make sure jsdocs are correct
 
 Coming soon, maybe:
 
@@ -30,12 +50,12 @@ Coming soon, maybe:
 
 ```js
 var script = document.createElement("script");
-script.src =
-  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape/portascrape.min.js";
-document.head.appendChild(script);
-(async () => {
+script.onload = async () => {
   console.log(await ps.$text("h1"));
-})();
+};
+script.src =
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@efa5dff/portascrape.min.js";
+document.head.appendChild(script);
 ```
 
 ### Puppeteer
@@ -46,7 +66,7 @@ import puppeteer from "puppeteer";
 let browser;
 (async () => {
   const portascrapeURL =
-    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape/portascrape.min.js";
+    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@efa5dff/portascrape.min.js";
   const url = "https://www.example.com";
   browser = await puppeteer.launch();
   const [page] = await browser.pages();
@@ -62,4 +82,4 @@ let browser;
   .finally(() => browser?.close());
 ```
 
-Unfortunately, you'll need to re-add the script on every nav.
+Unfortunately, you'll need to re-add the script on every nav. Let me know if you know of a way to add it on every nav while ensuring it'll be available immediately on domcontentloaded for waiting.

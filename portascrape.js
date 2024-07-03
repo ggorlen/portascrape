@@ -10,11 +10,12 @@
 /**
  * @typedef {Object} Ps
  * @property {function(string, PsOptions): Promise<Element>} $ - Waits for a selector to appear in the DOM and returns the first element that matches.
- * @property {function(string, PsOptions): Promise<void>} $click - Waits for an element to exist and clicks it.
- * @property {function(string, PsOptions): Promise<string>} $text - Waits for an element to exist and returns its textContent.
- * @property {function(number): Promise<void>} sleep - Waits for a given number of milliseconds.
- * @property {function(string, PsOptions): Promise<Array<Array<string>>>} $table - Waits for a table to exist and returns its contents as a 2D array.
- * @property {function(string, PsOptions): Promise<Array<Object>>} $tableWithHeaders - Waits for a table to exist and returns its contents as an array of objects with table headers as keys.
+ * @property {function(string, PsOptions): Promise<void>} $click - Wait for an element matching selector to exist, then click it.
+ * @property {function(string, PsOptions): Promise<string>} $text - Wait for an element matching selector to exist, then extract its `.textContent`.
+ * @property {function(number): Promise<void>} sleep - Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
+ * @property {function(string, PsOptions): Promise<string[][]>} $table - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
+ * @property {function(string, PsOptions): Promise<Object<string, string>[]>} $tableWithHeaders - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.
+ * @property {function(function(): boolean, PsOptions): Promise<void>} waitForFunction - Waits for an arbitrary predicate function to return truthy.
  */
 
 /**
@@ -36,6 +37,69 @@
     root.ps = factory();
   }
 })(typeof self !== "undefined" ? self : this, function () {
+  /**
+   * @type {DefaultPsOptions}
+   */
+  var defaultOptions = Object.freeze({ timeout: 10000, polling: "raf" });
+
+  /**
+   * Waits for an arbitrary predicate function to return truthy.
+   * @param {function(): boolean} fn - The predicate function to wait for.
+   * @param {PsOptions} [options] - The options for waiting.
+   * @returns {Promise<any>} A promise that resolves when the predicate returns truthy.
+   */
+  function waitForFunction(fn, options) {
+    options = Object.assign({}, defaultOptions, options);
+    validateOptions(options);
+
+    return new Promise(function (resolve, reject) {
+      var result = fn();
+
+      if (result) {
+        return resolve(result);
+      }
+
+      var timeoutId = setTimeout(function () {
+        reject(
+          "timeout of " +
+            options.timeout +
+            "ms exceeded waiting for function to return true",
+        );
+      }, options.timeout);
+
+      if (options.polling === "mutation") {
+        var observer = new MutationObserver(function () {
+          var result = fn();
+
+          if (result) {
+            observer.disconnect();
+            clearTimeout(timeoutId);
+            return resolve(result);
+          }
+        });
+        observer.observe(document, { childList: true, subtree: true });
+        return;
+      }
+
+      function poll() {
+        var result = fn();
+
+        if (result) {
+          clearTimeout(timeoutId);
+          return resolve(result);
+        }
+
+        if (typeof options.polling === "number") {
+          setTimeout(checkFunction, options.polling);
+        } else {
+          requestAnimationFrame(checkFunction);
+        }
+      }
+
+      poll();
+    });
+  }
+
   /**
    * Waits for an element to exist and clicks it.
    *
@@ -140,89 +204,38 @@
    * @returns {Promise<Element>} A promise that resolves with the found element.
    */
   function $(selector, options) {
-    /**
-     * @type {DefaultPsOptions}
-     */
-    var defaultOptions = { timeout: 10000, polling: "raf" };
-    options = Object.assign(defaultOptions, options);
-    validateOptions(options);
+    return waitForFunction(() => {
+      if (
+        options &&
+        (options.exactText || options.containsText || options.matches)
+      ) {
+        var elements = document.querySelectorAll(selector);
 
-    return new Promise(function (resolve, reject) {
-      var timeoutId = setTimeout(function () {
-        if (observer) {
-          observer.disconnect();
-        }
+        for (var i = 0; i < elements.length; i++) {
+          var element = elements[i];
+          var textContent = element.textContent;
 
-        reject(
-          "timeout of " +
-            options.timeout +
-            "ms exceeded waiting for selector " +
-            selector,
-        );
-      }, options.timeout);
-
-      function findElement() {
-        var element;
-
-        if (
-          options.exactText === undefined &&
-          options.containsText === undefined &&
-          options.matches === undefined
-        ) {
-          element = document.querySelector(selector);
-        } else {
-          // TODO find tightest element matching text/regex
-          var elements = document.querySelectorAll(selector);
-          element = Array.prototype.find.call(elements, function (element) {
-            return (
-              (options.exactText &&
-                element.textContent.trim() === options.exactText.trim()) ||
-              (options.containsText &&
-                element.textContent.includes(options.containsText)) ||
-              (options.matches && options.matches.test(element.textContent))
-            );
-          });
-        }
-
-        if (element) {
-          clearTimeout(timeoutId);
-
-          if (observer) {
-            observer.disconnect();
+          if (options.exactText && textContent === options.exactText) {
+            return element;
           }
 
-          resolve(element);
-          return true;
+          if (
+            options.containsText &&
+            textContent.includes(options.containsText)
+          ) {
+            return element;
+          }
+
+          if (options.matches && options.matches.test(textContent)) {
+            return element;
+          }
         }
+
+        return null;
       }
 
-      var observer;
-
-      if (options.polling === "mutation") {
-        if (!findElement()) {
-          observer = new MutationObserver(function () {
-            findElement();
-          });
-          observer.observe(document, { childList: true, subtree: true });
-        }
-
-        return;
-      }
-
-      function poll() {
-        if (findElement()) {
-          return;
-        }
-
-        if (typeof options.polling === "number") {
-          setTimeout(poll, options.polling);
-        } else {
-          requestAnimationFrame(poll);
-        }
-      }
-
-      poll();
-    });
+      return document.querySelector(selector);
+    }, options);
   }
 
   /**
@@ -278,4 +291,3 @@
   };
   return ps;
 });
-
