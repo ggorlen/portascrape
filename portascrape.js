@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} PsOptions
- * @property {number} [timeout=30000] - Timeout in milliseconds.
+ * @property {number} [timeout=10000] - Timeout in milliseconds.
  * @property {"raf" | "mutation" | number} [polling="raf"] - Polling strategy.
  * @property {string} [exactText] - Exact text to match.
  * @property {string} [containsText] - Substring to match.

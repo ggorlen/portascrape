@@ -6,8 +6,8 @@ Project status: pre-alpha.
 
 ## API
 
-- `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
 - `ps.waitForFunction(fn, opts)` -- wait for an arbitrary predicate.
+- `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
 - `ps.$click(selector, opts)` -- wait for an element matching selector to exist, then click it.
 - `ps.$text(selector, opts)` -- wait for an element matching selector to exist, then extract its `.textContent`.
 - `ps.$table(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
@@ -19,7 +19,7 @@ In all cases, `opts` is defined as:
 ```js
 /**
  * @typedef {Object} PsOptions
- * @property {number} [timeout=30000] - Timeout in milliseconds.
+ * @property {number} [timeout=10000] - Timeout in milliseconds.
  * @property {"raf" | "mutation" | number} [polling="raf"] - Polling strategy.
  * @property {string} [exactText] - Exact text to match.
  * @property {string} [containsText] - Substring to match.
@@ -29,14 +29,16 @@ In all cases, `opts` is defined as:
 
 TODO:
 
+- Select the tightest match for text
 - Break out special opts for waitForFunction because it doesn't use text matchers.
-- Add TS checking
 - Add tests
+- Add TS checking, linting and autoformatting
 - Make sure jsdocs are correct
 
 Coming soon, maybe:
 
 - Sync versions of the above API that don't wait
+- Add ability to change default timeouts
 - Pretty DOM element logging
 - `waitForDOMStable()`
 - Role-based selection
@@ -46,7 +48,7 @@ Coming soon, maybe:
 
 ## Usage
 
-## Userscript/Browser Console
+### Userscript/Browser Console
 
 ```js
 var script = document.createElement("script");
