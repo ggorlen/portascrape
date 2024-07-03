@@ -54,7 +54,7 @@ script.onload = async () => {
   console.log(await ps.$text("h1"));
 };
 script.src =
-  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@efa5dff/portascrape.min.js";
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@e4c3888/portascrape.min.js";
 document.head.appendChild(script);
 ```
 
@@ -66,7 +66,7 @@ import puppeteer from "puppeteer";
 let browser;
 (async () => {
   const portascrapeURL =
-    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@efa5dff/portascrape.min.js";
+    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@e4c3888/portascrape.min.js";
   const url = "https://www.example.com";
   browser = await puppeteer.launch();
   const [page] = await browser.pages();
