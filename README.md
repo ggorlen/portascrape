@@ -49,7 +49,7 @@ Coming soon, maybe:
 
 ## Usage
 
-### Userscript/Browser Console
+### Userscript/browser console
 
 ```js
 var script = document.createElement("script");
@@ -57,8 +57,17 @@ script.onload = async () => {
   console.log(await ps.$text("h1"));
 };
 script.src =
-  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@e4c3888/portascrape.min.js";
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js";
 document.head.appendChild(script);
+```
+
+### Script tag
+
+```js
+<script src="https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js"></script>
+<script>
+ps.$text("p").then(console.log);
+</script>
 ```
 
 ### Puppeteer
@@ -69,7 +78,7 @@ import puppeteer from "puppeteer";
 let browser;
 (async () => {
   const portascrapeURL =
-    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@e4c3888/portascrape.min.js";
+    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js";
   const url = "https://www.example.com";
   browser = await puppeteer.launch();
   const [page] = await browser.pages();
