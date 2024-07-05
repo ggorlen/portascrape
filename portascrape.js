@@ -12,6 +12,7 @@
  * @property {function(string, PsOptions): Promise<Element>} $ - Waits for a selector to appear in the DOM and returns the first element that matches.
  * @property {function(string, PsOptions): Promise<void>} $click - Wait for an element matching selector to exist, then click it.
  * @property {function(string, PsOptions): Promise<string>} $text - Wait for an element matching selector to exist, then extract its `.textContent`.
+ * @property {function(string, PsOptions): Promise<void>} $remove - Wait for an element matching selector to exist, then remove it.
  * @property {function(number): Promise<void>} sleep - Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
  * @property {function(string, PsOptions): Promise<string[][]>} $table - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
  * @property {function(string, PsOptions): Promise<Object<string, string>[]>} $tableWithHeaders - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.

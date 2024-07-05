@@ -16,14 +16,14 @@ script.onload = async () => {
   console.log(await ps.$text("h1"));
 };
 script.src =
-  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js";
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js";
 document.head.appendChild(script);
 ```
 
 ### Script tag
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js"></script>
 <p>hi</p>
 <script>
   ps.$text("p").then(console.log);
@@ -38,7 +38,7 @@ import puppeteer from "puppeteer"; // ^22.10.0
 let browser;
 (async () => {
   const portascrapeURL =
-    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js";
+    "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js";
   const url = "https://www.example.com";
   browser = await puppeteer.launch();
   const [page] = await browser.pages();
@@ -65,7 +65,7 @@ with sync_playwright() as p:
     page = browser.new_page()
     url = "https://www.example.com"
     page.goto(url, wait_until="domcontentloaded")
-    portascrape_url = "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js"
+    portascrape_url = "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js"
     page.add_script_tag(url=portascrape_url)
     print(page.evaluate('ps.$text("h1")')) # => Example Domain
     browser.close()
@@ -84,7 +84,7 @@ async def main():
     url = "https://www.example.com"
     await page.goto(url, waitUntil="domcontentloaded")
     portascrape_url = (
-        "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@f2869d3/portascrape.min.js"
+        "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js"
     )
     await page.addScriptTag({"url": portascrape_url})
     result = await page.evaluate('ps.$text("h1")')  # => Example Domain
@@ -132,7 +132,7 @@ In all cases, `opts` is defined as:
 - Add github pages docs and demo (and maybe playground)
 - Select the tightest match for text
 - Use separate opts for `wait` because it doesn't use text matchers.
-- Add comprehensive unit tests
+- Add comprehensive unit tests (solve browser playground challenges)
 - Add TS checking, linting and autoformatting
 - Make sure jsdocs are correct
 - Add option to permanently listen for a predicate (basically `wait` with an infinite loop around it and the option to remove it--this could be a `repeat: n` opt)
