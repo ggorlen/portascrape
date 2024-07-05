@@ -15,7 +15,7 @@
  * @property {function(number): Promise<void>} sleep - Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
  * @property {function(string, PsOptions): Promise<string[][]>} $table - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
  * @property {function(string, PsOptions): Promise<Object<string, string>[]>} $tableWithHeaders - Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.
- * @property {function(function(): boolean, PsOptions): Promise<void>} waitForFunction - Waits for an arbitrary predicate function to return truthy.
+ * @property {function(function(): boolean, PsOptions): Promise<void>} wait - Waits for an arbitrary predicate function to return truthy.
  */
 
 /**
@@ -48,7 +48,7 @@
    * @param {PsOptions} [options] - The options for waiting.
    * @returns {Promise<any>} A promise that resolves when the predicate returns truthy.
    */
-  function waitForFunction(fn, options) {
+  function wait(fn, options) {
     options = Object.assign({}, defaultOptions, options);
     validateOptions(options);
 
@@ -90,9 +90,9 @@
         }
 
         if (typeof options.polling === "number") {
-          setTimeout(checkFunction, options.polling);
+          setTimeout(poll, options.polling);
         } else {
-          requestAnimationFrame(checkFunction);
+          requestAnimationFrame(poll);
         }
       }
 
@@ -204,7 +204,7 @@
    * @returns {Promise<Element>} A promise that resolves with the found element.
    */
   function $(selector, options) {
-    return waitForFunction(() => {
+    return wait(() => {
       if (
         options &&
         (options.exactText || options.containsText || options.matches)
@@ -287,6 +287,7 @@
     $text: $text,
     $table: $table,
     $tableWithHeaders: $tableWithHeaders,
+    wait: wait,
     sleep: sleep,
   };
   return ps;

@@ -1,12 +1,12 @@
 # portascrape
 
-A collection of simple in-browser scraping utilities. Usable in any browser automation software, an extension, a userscript, or manually in the browser console.
+A collection of simple in-browser automation utilities. Usable in any browser automation software, an extension, a userscript, or manually in the browser console.
 
 Project status: pre-alpha.
 
 ## API
 
-- `ps.waitForFunction(fn, opts)` -- wait for an arbitrary predicate.
+- `ps.wait(fn, opts)` -- wait for an arbitrary predicate.
 - `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
 - `ps.$click(selector, opts)` -- wait for an element matching selector to exist, then click it.
 - `ps.$text(selector, opts)` -- wait for an element matching selector to exist, then extract its `.textContent`.
@@ -30,13 +30,14 @@ In all cases, `opts` is defined as:
 TODO:
 
 - Select the tightest match for text
-- Break out special opts for waitForFunction because it doesn't use text matchers.
+- Break out special opts for `wait` because it doesn't use text matchers.
 - Add tests
 - Add TS checking, linting and autoformatting
 - Make sure jsdocs are correct
 
 Coming soon, maybe:
 
+- Add option to permanently listen for a predicate (basically `wait` with an infinite loop around it and the option to remove it)
 - Sync versions of the above API that don't wait
 - Add ability to change default timeouts
 - Pretty DOM element logging
