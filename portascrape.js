@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} PsOptions
- * @property {number} [timeout=10000] - Timeout in milliseconds.
+ * @property {number} [timeout=10000] - Timeout in milliseconds. 0 is infinite.
  * @property {"raf" | "mutation" | number} [polling="raf"] - Polling strategy.
  * @property {string} [exactText] - Exact text to match.
  * @property {string} [containsText] - Substring to match.
@@ -21,7 +21,7 @@
 /**
  * Default ps options.
  * @typedef {Object} DefaultPsOptions
- * @property {number} [timeout=10000] - Timeout in milliseconds.
+ * @property {number} [timeout=10000] - Timeout in milliseconds. 0 is infinite.
  * @property {"raf" | "mutation" | number} [polling="raf"] - Polling strategy.
  */
 
@@ -50,6 +50,7 @@
    */
   function wait(fn, options) {
     options = Object.assign({}, defaultOptions, options);
+
     validateOptions(options);
 
     return new Promise(function (resolve, reject) {
@@ -59,13 +60,17 @@
         return resolve(result);
       }
 
-      var timeoutId = setTimeout(function () {
-        reject(
-          "timeout of " +
-            options.timeout +
-            "ms exceeded waiting for function to return true",
-        );
-      }, options.timeout);
+      var timeoutId;
+
+      if (options.timeout > 0) {
+        timeoutId = setTimeout(function () {
+          reject(
+            "timeout of " +
+              options.timeout +
+              "ms exceeded waiting for function to return true",
+          );
+        }, options.timeout);
+      }
 
       if (options.polling === "mutation") {
         var observer = new MutationObserver(function () {
@@ -130,6 +135,26 @@
   function $text(selector, options) {
     return ps.$(selector, options).then(function (element) {
       return element.textContent;
+    });
+  }
+
+  /**
+   * Waits for an element to exist and removes it.
+   *
+   * @param {string} selector - The selector to wait for.
+   * @param {PsOptions} [options] - The options for waiting and selecting.
+   * @returns {Promise<void>} A promise that resolves when the element is removed.
+   */
+  function $remove(selector, options) {
+    return ps.$(selector, options).then(function (element) {
+      return new Promise(function (resolve, reject) {
+        try {
+          element.remove();
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
     });
   }
 
@@ -260,14 +285,15 @@
       }
 
       if (textOptions.includes(key)) {
-        providedTextOptions++;
-
-        if (
-          typeof options[key] !== "string" &&
-          !(options[key] instanceof RegExp)
-        ) {
-          throw new TypeError("'" + key + "' must be a string or RegExp.");
+        if (/text/.test(key) && typeof options[key] !== "string") {
+          throw new TypeError("'" + key + "' must be a string.");
         }
+
+        if (key === "matches" && !(options[key] instanceof RegExp)) {
+          throw new TypeError("'" + key + "' must be a RegExp.");
+        }
+
+        providedTextOptions++;
       }
 
       if (providedTextOptions > 1) {
@@ -284,11 +310,12 @@
   var ps = {
     $: $,
     $click: $click,
-    $text: $text,
+    $remove: $remove,
     $table: $table,
     $tableWithHeaders: $tableWithHeaders,
-    wait: wait,
+    $text: $text,
     sleep: sleep,
+    wait: wait,
   };
   return ps;
 });
