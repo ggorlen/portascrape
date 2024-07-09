@@ -8,7 +8,27 @@ Project status: pre-alpha, API unstable. Link to a specific commit to ensure sta
 
 [Try it!](https://stackoverflow.com/a/78709310/6243352) (see runnable snippet at bottom of post)
 
-### Userscript/browser console
+### Userscript
+
+```js
+// ==UserScript==
+// @name         Test portascrape
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Test portascrape
+// @author       ggorlen
+// @run-at       document-start
+// @match        http://www.example.com
+// @require      https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js
+// ==/UserScript==
+
+(async () => {
+  const text = await ps.$text("h1");
+  console.log(text); // => Example Domain
+})();
+```
+
+### Browser console
 
 ```js
 var script = document.createElement("script");
@@ -129,6 +149,7 @@ In all cases, `opts` is defined as:
 
 ### TODO
 
+- Remove all/click all/select all (e.g. `ps.$$remove()`)
 - Add github pages docs and demo (and maybe playground)
 - Select the tightest match for text
 - Use separate opts for `wait` because it doesn't use text matchers.
@@ -149,6 +170,9 @@ In all cases, `opts` is defined as:
 - Debugging/verbose mode
 - Add small Node API that integrates with Puppeteer/Playwright (and other libs) to auto-add the portascrape script after every navigation
 - Role-based selection
+- `$not()` -- element does not exist
+- `$visible()` -- element is visible
+- `$scroll()` -- wait for element then scroll into view
 - `waitForDOMStable()`
 - `withinFrame()`
 - `withinShadowRoot()`
