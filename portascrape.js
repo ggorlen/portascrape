@@ -51,7 +51,6 @@
    */
   function wait(fn, options) {
     options = Object.assign({}, defaultOptions, options);
-
     validateOptions(options);
 
     return new Promise(function (resolve, reject) {
@@ -232,35 +231,52 @@
   function $(selector, options) {
     return wait(() => {
       if (
-        options &&
-        (options.exactText || options.containsText || options.matches)
+        !options ||
+        (!options.exactText && !options.containsText && !options.matches)
       ) {
-        var elements = document.querySelectorAll(selector);
+        return document.querySelector(selector);
+      }
 
-        for (var i = 0; i < elements.length; i++) {
-          var element = elements[i];
-          var textContent = element.textContent;
+      var elements = document.querySelectorAll(selector);
 
-          if (options.exactText && textContent === options.exactText) {
-            return element;
-          }
+      for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var result;
 
-          if (
-            options.containsText &&
-            textContent.includes(options.containsText)
-          ) {
-            return element;
-          }
+        function search() {
+          for (var j = 0; j < element.children.length; j++) {
+            var child = element.children[j];
 
-          if (options.matches && options.matches.test(textContent)) {
-            return element;
+            if (child.nodeType === Node.TEXT_NODE && predicate(child)) {
+              return element;
+            }
           }
         }
 
-        return null;
+        if (options.exactText || options.containsText) {
+          result = search(function (child) {
+            return child.textContent.trim() === options.exactText;
+          });
+        }
+
+        if (options.containsText) {
+          result = search(function (child) {
+            return child.textContent.indexOf(options.containsText) > -1;
+          });
+        }
+
+        if (options.matches) {
+          result = search(function (child) {
+            return options.matches.test(element.textContent.trim());
+          });
+        }
+
+        if (result) {
+          return result;
+        }
       }
 
-      return document.querySelector(selector);
+      return null;
     }, options);
   }
 

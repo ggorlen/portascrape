@@ -151,7 +151,6 @@ In all cases, `opts` is defined as:
 
 - Remove all/click all/select all (e.g. `ps.$$remove()`)
 - Add github pages docs and demo (and maybe playground)
-- Select the tightest match for text
 - Use separate opts for `wait` because it doesn't use text matchers.
 - Add comprehensive unit tests (solve browser playground challenges)
 - Add TS checking, linting and autoformatting
