@@ -12,20 +12,19 @@ Project status: pre-alpha, API unstable. Link to a specific commit to ensure sta
 
 ```js
 // ==UserScript==
-// @name         Test portascrape
+// @name         Test Portascrape
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Test portascrape
+// @version      2025-01-26
+// @description  Test Portascrape
 // @author       ggorlen
+// @match        https://example.com/
 // @run-at       document-start
-// @match        http://www.example.com
 // @require      https://cdn.jsdelivr.net/gh/ggorlen/portascrape@1fb4e4c/portascrape.min.js
+// @grant        none
 // ==/UserScript==
 
-(async () => {
-  const text = await ps.$text("h1");
-  console.log(text); // => Example Domain
-})();
+const text = await ps.$text("h1");
+console.log(text); // => Example Domain
 ```
 
 ### Browser console

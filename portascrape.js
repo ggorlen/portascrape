@@ -229,6 +229,16 @@
    * @returns {Promise<Element>} A promise that resolves with the found element.
    */
   function $(selector, options) {
+    function search(element, predicate) {
+      for (var j = 0; j < element.childNodes.length; j++) {
+        var child = element.childNodes[j];
+
+        if (child.nodeType === Node.TEXT_NODE && predicate(child)) {
+          return element;
+        }
+      }
+    }
+
     return wait(() => {
       if (
         !options ||
@@ -243,31 +253,21 @@
         var element = elements[i];
         var result;
 
-        function search() {
-          for (var j = 0; j < element.children.length; j++) {
-            var child = element.children[j];
-
-            if (child.nodeType === Node.TEXT_NODE && predicate(child)) {
-              return element;
-            }
-          }
-        }
-
         if (options.exactText || options.containsText) {
-          result = search(function (child) {
+          result = search(element, function (child) {
             return child.textContent.trim() === options.exactText;
           });
         }
 
         if (options.containsText) {
-          result = search(function (child) {
+          result = search(element, function (child) {
             return child.textContent.indexOf(options.containsText) > -1;
           });
         }
 
         if (options.matches) {
-          result = search(function (child) {
-            return options.matches.test(element.textContent.trim());
+          result = search(element, function (child) {
+            return options.matches.test(child.textContent.trim());
           });
         }
 
