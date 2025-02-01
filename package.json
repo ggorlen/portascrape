@@ -1,0 +1,31 @@
+{
+  "scripts": {
+    "check-types": "tsc --project ./jsconfig.json",
+    "lint": "eslint .",
+    "generate-types": "tsc portascrape.js --declaration --emitDeclarationOnly --allowJs --outDir dist"
+  },
+  "devDependencies": {
+    "@types/node": "20.0.0",
+    "@types/requirejs": "^2.1.37",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-config-standard": "^17.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.5.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "amd": true,
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "standard",
+      "prettier"
+    ],
+    "rules": {
+      "no-var": 0,
+      "object-shorthand": 0
+    }
+  }
+}
