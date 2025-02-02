@@ -10,7 +10,7 @@ Project status: pre-alpha, API unstable. Link to a specific commit to ensure sta
 
 ## Usage
 
-[Try it!](https://stackoverflow.com/a/78709310/6243352) (see runnable snippet at bottom of post)
+[Try it!](https://stackoverflow.com/a/79406960/6243352) (see runnable snippet at bottom of post)
 
 ### Userscript
 
