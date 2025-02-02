@@ -1,6 +1,10 @@
 # portascrape
 
-A collection of simple in-browser automation utilities. Usable in any browser automation software, an extension, a userscript, or manually in the browser console.
+A collection of simple in-browser real-time automation utilities focused on waiting and text selection.
+
+You can use portascrape in a userscript, an extension, a bookmarklet, manually in the browser console, or with browser automation tools.
+
+An example usage might be in a userscript, polling until a certain message appears in a chat feed, then removing it.
 
 Project status: pre-alpha, API unstable. Link to a specific commit to ensure stability.
 
@@ -124,14 +128,16 @@ I'd love to hear of a way to add it on every nav while ensuring it'll be availab
 
 All operations are async and wait for the element to exist before taking action.
 
-- `ps.wait(fn, opts)` -- wait for an arbitrary predicate function to return truthy.
-- `ps.$(selector, opts)` -- wait for a DOM element matching a selector to exist and return it.
-- `ps.$click(selector, opts)` -- wait for an element matching selector to exist, then click it.
-- `ps.$text(selector, opts)` -- wait for an element matching selector to exist, then extract its `.textContent`.
-- `ps.$remove(selector, opts)` -- wait for an element matching selector to exist, then remove it.
-- `ps.$table(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array.
-- `ps.$tableWithHeaders(selector, opts)` -- wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects.
-- `ps.sleep(timeout)` -- Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible.
+| Method                          | Description |
+|----------------------------------|------------|
+| `ps.wait(fn, opts)`                    | Wait for an arbitrary predicate function to return truthy. |
+| `ps.$(selector, opts)`                 | Wait for a DOM element matching a selector to exist and return it. |
+| `ps.$click(selector, opts)`            | Wait for an element matching selector to exist, then click it. |
+| `ps.$text(selector, opts)`             | Wait for an element matching selector to exist, then extract its `.textContent`. |
+| `ps.$remove(selector, opts)`           | Wait for an element matching selector to exist, then remove it. |
+| `ps.$table(selector, opts)`            | Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into a 2d array. |
+| `ps.$tableWithHeaders(selector, opts)` | Wait for an element to exist, then scrape its `<tr>`, `<th>` and `<td>` content into an array of objects. |
+| `ps.sleep(timeout)`                    | Sleep for n milliseconds. Discouraged in favor of any of the other operations, but possible. |
 
 In all cases, `opts` is defined as:
 
@@ -148,18 +154,16 @@ In all cases, `opts` is defined as:
 
 ### TODO
 
-- Remove all/click all/select all (e.g. `ps.$$remove()`)
+- Remove all/click all/select all (e.g. `ps.$$remove()`, `ps.$$()`, `ps.$$map()`, etc)
 - Add github pages docs and demo (and maybe playground)
 - Use separate opts for `wait` because it doesn't use text matchers.
 - Add comprehensive unit tests (solve browser playground challenges)
-- Add TS checking, linting and autoformatting
-- Make sure jsdocs are correct
 - Add option to permanently listen for a predicate (basically `wait` with an infinite loop around it and the option to remove it--this could be a `repeat: n` opt)
-- Sync versions of the API that don't wait (or maybe not, since this is basically jQuery)
+  - Option to remove an element whenever it exists and persist the listener
 - Add ability to change default timeouts globally
-- Option to remove an element whenever it exists and persit the listener
-- Option to remove all elements not in a subtree https://github.com/ggorlen/userscripts/blob/aafa53035a84136b6ae2704b4f8a476d56b5d364/src/weather.user.js#L36
-- Option to blast away scripts when they're added https://github.com/ggorlen/userscripts/blob/aafa53035a84136b6ae2704b4f8a476d56b5d364/src/weather.user.js#L17
+- Generate types and uglify, similar to HTMX
+- Option to remove all elements not in a subtree like [this](https://github.com/ggorlen/userscripts/blob/aafa53035a84136b6ae2704b4f8a476d56b5d364/src/weather.user.js#L36)
+- Option to blast away scripts when they're added like [this](https://github.com/ggorlen/userscripts/blob/aafa53035a84136b6ae2704b4f8a476d56b5d364/src/weather.user.js#L17)
 - Option to download data to file
 - Macro for easily writing mutation observers or `setTimeout`/RAF loops
 - Function to easily set global CSS
