@@ -154,6 +154,7 @@ In all cases, `opts` is defined as:
 
 ### TODO
 
+- should be loadable on nav with [this approach](https://stackoverflow.com/questions/79716676/python-playwright-mouse-pointer-ui-enable/79716698#79716698)
 - Remove all/click all/select all (e.g. `ps.$$remove()`, `ps.$$()`, `ps.$$map()`, etc)
 - Add github pages docs and demo (and maybe playground)
 - Use separate opts for `wait` because it doesn't use text matchers.
