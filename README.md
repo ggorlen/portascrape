@@ -118,11 +118,66 @@ async def main():
 asyncio.get_event_loop().run_until_complete(main())
 ```
 
-### Note for browser automation
+### Re-adding portascrape after navigation
 
-Unfortunately, you'll need to re-add the script on every nav.
+Since the script is removed after each navigation, you can use an equivalent of `addInitScript` in Playwright to re-attach the script after each navigation:
 
-I'd love to hear of a way to add it on every nav while ensuring it'll be available immediately on domcontentloaded for waiting in any browser automation library.
+```js
+import {chromium} from "playwright";
+
+const portascrapeURL =
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@9cca94d/portascrape.min.js";
+const res = await fetch(portascrapeURL);
+const scriptContent = await res.text();
+const browser = await chromium.launch();
+const page = await browser.newPage();
+await page.addInitScript({content: scriptContent});
+await page.goto("https://www.example.com", {waitUntil: "commit"});
+const text = await page.evaluate(async () => {
+  return await ps.$text("h1");
+});
+console.log(text); // => Example Domain
+await browser.close();
+```
+
+or:
+
+```js
+import puppeteer from "puppeteer";
+
+const portascrapeURL =
+  "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@9cca94d/portascrape.min.js";
+const res = await fetch(portascrapeURL);
+const scriptContent = await res.text();
+const browser = await puppeteer.launch();
+const [page] = await browser.pages();
+await page.evaluateOnNewDocument(scriptContent);
+await page.goto("https://www.example.com", {waitUntil: "domcontentloaded"});
+const text = await page.evaluate(async () => {
+  return await ps.$text("h1");
+});
+console.log(text); // => Example Domain
+await browser.close();
+```
+
+or:
+
+```py
+import requests
+from playwright.sync_api import sync_playwright
+
+portascrape_url = "https://cdn.jsdelivr.net/gh/ggorlen/portascrape@9cca94d/portascrape.min.js"
+script_content = requests.get(portascrape_url).text
+
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+    page.add_init_script(script_content)
+    page.goto("https://www.example.com", wait_until="commit")
+    text = page.evaluate("async () => await ps.$text('h1')")
+    print(text)  # => Example Domain
+    browser.close()
+```
 
 ## API
 
